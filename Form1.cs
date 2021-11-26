@@ -7,121 +7,156 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
-namespace Remote_Garden_Control_Gui
+namespace Form1
 {
     public partial class Form1 : Form
     {
         public Form1()
         {
+            
             InitializeComponent();
+            string path2 = @"SavedText\\configuration2.txt";
+
+            // Creates an folder called SavedText
+            Directory.CreateDirectory("SavedText");
+
+            // If the file doesn't exsit then display these defualt values
+            if (!File.Exists(path2))
+            {
+                SRRNumbericBox.Value = 0;
+                SDERNumbericBox.Value = 0;
+                APTextBox.Text = "Enter here...";
+                SHNTextBox.Text = "Enter here...";
+            }
+
+            // If the file does exsit then read and diplay the values from the file
+            else
+            {
+                string[] lines = File.ReadAllLines(path2);
+
+                SRRNumbericBox.Value = Convert.ToInt32(lines[0]);
+                SDERNumbericBox.Value = Convert.ToInt32(lines[1]);
+                APTextBox.Text = lines[2];
+                SHNTextBox.Text = lines[3];
+            }
         }
 
-        private void GroupBox1_Enter(object sender, EventArgs e)
+        /* 
+        
+        I was attempted something but I don't really know how to do it.
+         
+        class saveSettings
         {
+            int SRR = 0; //Statistics Refresh Rate
+            int SDER = 0; //SQL Server data entry rate
+            string AP = ""; //Arduino Port
+            string SQLS = ""; //SQL Server
+            string path = @"SavedText\\configuration2.txt";
 
+            public saveSettings(int srrValue, int sderValue, string apInput, string sqlsInput)
+            {
+
+                SRR = srrValue;
+                SDER = sderValue;
+                AP = apInput;
+                SQLS = sqlsInput;
+                
+                // Create a file to write to
+                if (!File.Exists(path))
+                {
+                    
+                    using (StreamWriter sw = File.CreateText(path))
+                    {
+                        sw.WriteLine("Statistics Refresh Rate: ");
+                        sw.WriteLine("SQL Server data entry rate: ");
+                        sw.WriteLine("Arduino Port: ");
+                        sw.WriteLine("SQL Server: ");
+                    }
+
+                    using (StreamWriter sw = File.AppendText(path))
+                    {
+                        sw.WriteLine(SRR);
+                        sw.WriteLine(SDER);
+                        sw.WriteLine(AP);
+                        sw.WriteLine(SQLS);
+                    }
+                }
+            }
         }
-
-        private void Label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Label4_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void FlowLayoutPanel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
+        */
 
         private void Form1_Load(object sender, EventArgs e)
         {
 
         }
 
-        private void Label1_Click_1(object sender, EventArgs e)
+        private void resetButton_Click(object sender, EventArgs e)
         {
-
-        }
-
-        private void Label3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Label2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void TextBox2_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void TextBox4_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void TextBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void TextBox5_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Chart1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-
-        private void ToolStripButton1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Button1_Click(object sender, EventArgs e)
-        {
+            string path = @"SavedText\\configuration2.txt";
             
+            // Reads the file and puts the inputs into an array
+            string[] lines = File.ReadAllLines(path);
+
+            // Displays the read inputs from the array into the textboxs in the form 
+            SRRNumbericBox.Value = Convert.ToInt32(lines[0]);
+            SDERNumbericBox.Value = Convert.ToInt32(lines[1]);
+            APTextBox.Text = lines[2];
+            SHNTextBox.Text = lines[3];
+
+
         }
 
-        private void Label6_Click(object sender, EventArgs e)
+        private void saveButton_Click(object sender, EventArgs e)
         {
+            /*  string path = @"SavedText\\configuration.txt";
+              string temp = APTextBox.Text;
+              string temp2 = ":Arduino Port";
+              Directory.CreateDirectory("SavedText");
 
-        }
+              File.WriteAllText(path, temp);
+              File.AppendAllText(path, temp2);
+              MessageBox.Show("Successfully saved at " + path);
+            */
+            string path = @"SavedText\\configuration2.txt";
 
-        private void CheckBox1_CheckedChanged(object sender, EventArgs e)
-        {
-            if (autoMaxCheckBox.Checked)
+            // Create a file to write to.
+            if (!File.Exists(path))
             {
-                graphMaxBox.Enabled = false;
+               // APTextBox.Text = "None";
+               // SHNTextBox.Text = "None";
+                using (StreamWriter sw = File.CreateText(path))
+                {
+                    sw.WriteLine(SRRNumbericBox.Value);
+                    sw.WriteLine(SDERNumbericBox.Value);
+                    sw.WriteLine(APTextBox.Text);
+                    sw.WriteLine(SHNTextBox.Text);
+                }
+
             }
+
+            // Overwrites the file.
             else
             {
-                graphMaxBox.Enabled = true;
+                using (StreamWriter sw = File.CreateText(path))
+                {
+                    sw.WriteLine(SRRNumbericBox.Value);
+                    sw.WriteLine(SDERNumbericBox.Value);
+                    sw.WriteLine(APTextBox.Text);
+                    sw.WriteLine(SHNTextBox.Text);
+                }
+
             }
-        }
+            /*
+            string[] lines = File.ReadAllLines(path2);
 
-        private void GraphMaxBox_ValueChanged(object sender, EventArgs e)
-        {
+             SRRNumbericBox.Value = Convert.ToInt32(lines[0]);
+             SDERNumbericBox.Value = Convert.ToInt32(lines[1]);
+             APTextBox.Text = lines[2];
+             SHNTextBox.Text = lines[3];
+            */
 
-        }
-
-        private void MeasurementComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            
-        }
-
-        private void Timer1_Tick(object sender, EventArgs e)
-        {
             
         }
     }
