@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Form1
+namespace Remote_Garden_Control_Gui
 {
-    static class Program
+    class Program
     {
         /// <summary>
         /// The main entry point for the application.
@@ -16,7 +13,32 @@ namespace Form1
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            // Initialize Components
+            ConfigManagement configManager = new ConfigManagement();
+            ConfigValues initialValues = configManager.getConfig();
+            Form1 mainForm = new Form1(configManager);
+            Connector arduino = new Connector();
+            SQLServer server = new SQLServer();
+            RecordKeeper recordKeeper = new RecordKeeper(arduino, 
+                initialValues.serverDataRate, initialValues.statisticsRefreshRate);
+            RecordRetriever recordRetriever = new RecordRetriever(server);
+            // Error Subscriptions
+            recordKeeper.ArduinoConnectionError += mainForm.OnArduinoConnectionError;
+            mainForm.ResetArduino += recordKeeper.OnResetArduino;
+            server.SQLServerError += mainForm.OnSQLServerError;
+            // RecordKeeper related subscriptions
+            recordKeeper.InfoUpdate += server.OnRecordUpdate;
+            recordKeeper.GuiUpdate += mainForm.OnGuiUpdate;
+            recordKeeper.startTimers();
+            // RecordRetriever related subscriptions
+            mainForm.GenerateGraphPressed += recordRetriever.OnGenerateGraphPressed;
+            // Config related subscriptions
+            mainForm.ConfigChanged += configManager.OnConfigChanged;
+            mainForm.ConfigChanged += recordKeeper.OnConfigChanged;
+            mainForm.ConfigChanged += arduino.OnConfigChanged;
+
+            Application.Run(mainForm);
         }
+
     }
 }
