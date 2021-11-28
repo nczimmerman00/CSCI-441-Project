@@ -7,157 +7,204 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
 
-namespace Form1
+namespace Remote_Garden_Control_Gui
 {
     public partial class Form1 : Form
     {
-        public Form1()
+        ConfigManagement config;
+        public event EventHandler<EventArgs> ResetArduino;
+        public event EventHandler<RecordRetrievalConfiguration> GenerateGraphPressed;
+        public event EventHandler<ConfigValues> ConfigChanged;
+
+        public Form1(ConfigManagement x)
+        {
+            InitializeComponent();
+            config = x;
+            resetConfig();
+        }
+
+        public void OnGuiUpdate(object source, ArduinoData args)
+        {
+            TemperatureTextBox.Text = args.temperature.ToString();
+            HumidityTextBox.Text = args.humidity.ToString();
+            SoilMoistureTextbox.Text = args.moisture.ToString();
+        }
+
+        public void OnArduinoConnectionError(object source, EventArgs args)
+        {
+            ArduinoConnectionErrorDialog();
+        }
+
+        private void ArduinoConnectionErrorDialog()
+        {
+            TemperatureTextBox.Text = "ERROR";
+            HumidityTextBox.Text = "ERROR";
+            SoilMoistureTextbox.Text = "ERROR";
+            MessageBox.Show("Error:\nFailed to connect to arduino device.\nPlease " +
+                "check the COM port in the configuration settings is correct.");
+            ArduinoResetButton.Visible = true;
+        }
+
+        public void OnSQLServerError(object source, String errorMessage)
+        {
+            MessageBox.Show("SQL Server error: " + errorMessage);
+        }
+
+        private void GroupBox1_Enter(object sender, EventArgs e)
         {
             
-            InitializeComponent();
-            string path2 = @"SavedText\\configuration2.txt";
-
-            // Creates an folder called SavedText
-            Directory.CreateDirectory("SavedText");
-
-            // If the file doesn't exsit then display these defualt values
-            if (!File.Exists(path2))
-            {
-                SRRNumbericBox.Value = 0;
-                SDERNumbericBox.Value = 0;
-                APTextBox.Text = "Enter here...";
-                SHNTextBox.Text = "Enter here...";
-            }
-
-            // If the file does exsit then read and diplay the values from the file
-            else
-            {
-                string[] lines = File.ReadAllLines(path2);
-
-                SRRNumbericBox.Value = Convert.ToInt32(lines[0]);
-                SDERNumbericBox.Value = Convert.ToInt32(lines[1]);
-                APTextBox.Text = lines[2];
-                SHNTextBox.Text = lines[3];
-            }
         }
 
-        /* 
-        
-        I was attempted something but I don't really know how to do it.
-         
-        class saveSettings
+        private void Label1_Click(object sender, EventArgs e)
         {
-            int SRR = 0; //Statistics Refresh Rate
-            int SDER = 0; //SQL Server data entry rate
-            string AP = ""; //Arduino Port
-            string SQLS = ""; //SQL Server
-            string path = @"SavedText\\configuration2.txt";
-
-            public saveSettings(int srrValue, int sderValue, string apInput, string sqlsInput)
-            {
-
-                SRR = srrValue;
-                SDER = sderValue;
-                AP = apInput;
-                SQLS = sqlsInput;
-                
-                // Create a file to write to
-                if (!File.Exists(path))
-                {
-                    
-                    using (StreamWriter sw = File.CreateText(path))
-                    {
-                        sw.WriteLine("Statistics Refresh Rate: ");
-                        sw.WriteLine("SQL Server data entry rate: ");
-                        sw.WriteLine("Arduino Port: ");
-                        sw.WriteLine("SQL Server: ");
-                    }
-
-                    using (StreamWriter sw = File.AppendText(path))
-                    {
-                        sw.WriteLine(SRR);
-                        sw.WriteLine(SDER);
-                        sw.WriteLine(AP);
-                        sw.WriteLine(SQLS);
-                    }
-                }
-            }
+            
         }
-        */
+
+        private void Label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void FlowLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
 
         private void Form1_Load(object sender, EventArgs e)
         {
 
         }
 
-        private void resetButton_Click(object sender, EventArgs e)
+        private void Label1_Click_1(object sender, EventArgs e)
         {
-            string path = @"SavedText\\configuration2.txt";
-            
-            // Reads the file and puts the inputs into an array
-            string[] lines = File.ReadAllLines(path);
-
-            // Displays the read inputs from the array into the textboxs in the form 
-            SRRNumbericBox.Value = Convert.ToInt32(lines[0]);
-            SDERNumbericBox.Value = Convert.ToInt32(lines[1]);
-            APTextBox.Text = lines[2];
-            SHNTextBox.Text = lines[3];
-
 
         }
 
-        private void saveButton_Click(object sender, EventArgs e)
+        private void Label3_Click(object sender, EventArgs e)
         {
-            /*  string path = @"SavedText\\configuration.txt";
-              string temp = APTextBox.Text;
-              string temp2 = ":Arduino Port";
-              Directory.CreateDirectory("SavedText");
 
-              File.WriteAllText(path, temp);
-              File.AppendAllText(path, temp2);
-              MessageBox.Show("Successfully saved at " + path);
-            */
-            string path = @"SavedText\\configuration2.txt";
+        }
 
-            // Create a file to write to.
-            if (!File.Exists(path))
-            {
-               // APTextBox.Text = "None";
-               // SHNTextBox.Text = "None";
-                using (StreamWriter sw = File.CreateText(path))
-                {
-                    sw.WriteLine(SRRNumbericBox.Value);
-                    sw.WriteLine(SDERNumbericBox.Value);
-                    sw.WriteLine(APTextBox.Text);
-                    sw.WriteLine(SHNTextBox.Text);
-                }
+        private void Label2_Click(object sender, EventArgs e)
+        {
 
+        }
+
+        private void TextBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void TextBox4_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void TextBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void TextBox5_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Chart1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+
+        private void ToolStripButton1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Button1_Click(object sender, EventArgs e)
+        {
+            if (measurementComboBox.Text == "") {
+                MessageBox.Show("Please select a measurement option.");
+                return;
             }
-
-            // Overwrites the file.
-            else
-            {
-                using (StreamWriter sw = File.CreateText(path))
-                {
-                    sw.WriteLine(SRRNumbericBox.Value);
-                    sw.WriteLine(SDERNumbericBox.Value);
-                    sw.WriteLine(APTextBox.Text);
-                    sw.WriteLine(SHNTextBox.Text);
-                }
-
+            if (axisDisplayComboBox.Text == "") {
+                MessageBox.Show("Please select an x-axis display option.");
+                return;
             }
-            /*
-            string[] lines = File.ReadAllLines(path2);
+            if (startDatePicker.Value.CompareTo(endDatePicker.Value) >= 0)
+            {
+                MessageBox.Show("The end date can't be earlier or equal to the start date.");
+                return;
+            }
+            RecordRetrievalConfiguration config = new RecordRetrievalConfiguration(
+                measurementComboBox.Text,
+                startDatePicker.Value,
+                endDatePicker.Value,
+                axisDisplayComboBox.Text);
+            if (config.measurement == "Soil Moisture")
+                config.measurement = "soil_moisture";
+            if (GenerateGraphPressed != null)
+            {
+                GenerateGraphPressed(this, config);
+            }
+        }
 
-             SRRNumbericBox.Value = Convert.ToInt32(lines[0]);
-             SDERNumbericBox.Value = Convert.ToInt32(lines[1]);
-             APTextBox.Text = lines[2];
-             SHNTextBox.Text = lines[3];
-            */
+        private void Label6_Click(object sender, EventArgs e)
+        {
 
+        }
+
+        private void GraphMaxBox_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void MeasurementComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
             
+        }
+
+        private void Timer1_Tick(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void ArduinoResetButton_Click(object sender, EventArgs e)
+        {
+            if (ResetArduino != null)
+            {
+                ResetArduino(this, new EventArgs());
+            }
+        }
+
+        private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ResetButton_Click(object sender, EventArgs e)
+        {
+            resetConfig();
+        }
+
+        private void resetConfig()
+        {
+            ConfigValues values = config.getConfig();
+            SRRNumbericBox.Value = values.statisticsRefreshRate;
+            SDERNumbericBox.Value = values.serverDataRate;
+            APTextBox.Text = values.arduinoPort;
+        }
+
+        private void SaveButton_Click(object sender, EventArgs e)
+        {
+            ConfigValues values = new ConfigValues(Decimal.ToInt32(SRRNumbericBox.Value), 
+                Decimal.ToInt32(SDERNumbericBox.Value), APTextBox.Text);
+            if (ConfigChanged != null)
+            {
+                ConfigChanged(this, values);
+                MessageBox.Show("Changes saved successfully.");
+            }
         }
     }
 }
