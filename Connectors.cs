@@ -1,43 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO.Ports;
 
 namespace Remote_Garden_Control_Gui
 {
-    public class ArduinoData
-    {
-        public float temperature;
-        public float humidity;
-        public float moisture;
-
-        public ArduinoData(float t, float h, float m)
-        {
-            this.temperature = t;
-            this.humidity = h;
-            this.moisture = m;
-        }
-
-    }
-
     class Connector
     {
-        bool deviceIsConnected;
         public SerialPort arduinoPort;
-        protected virtual bool checkConnectionStatus()
+        private string portName;
+
+        public bool checkConnectionStatus()
         {
-            //TODO
-            return false;
+            try
+            {
+                openArd();
+                closeArd();
+                return true;
+            } catch (Exception e)
+            {
+                return false;
+            }
         }
         private void openArd()
         {
             arduinoPort = new SerialPort();
             arduinoPort.BaudRate = 9600;
-            arduinoPort.PortName = "COM5"; //this changes with usb used, check ardiuno ide
+            arduinoPort.PortName = this.portName; //this changes with usb used, check ardiuno ide
             arduinoPort.Open();
-
         }
 
         private void closeArd()
@@ -48,7 +36,6 @@ namespace Remote_Garden_Control_Gui
         //Post Condition: Return float array with [Temperature, Humidity, Soil Moisture]
         public ArduinoData requestGardenData()
         {
-            float[] returnValues;   //[Temperature, Humidity, Soil Moisture]
             try
             {
                 openArd();
@@ -56,9 +43,8 @@ namespace Remote_Garden_Control_Gui
                 closeArd();
                 return parseInputData(input);
             }
-            catch (Exception e) //(if ard can't be found)
+            catch (Exception e) // (if ard can't be found)
             {
-                //Todo 
                 return null;
             }
         }
@@ -77,6 +63,10 @@ namespace Remote_Garden_Control_Gui
                 returnValues[k] = float.Parse(inputPieces[i]);
             }
             return new ArduinoData(returnValues[0], returnValues[1], returnValues[2]);
+        }
+        public void OnConfigChanged(object sender, ConfigValues args)
+        {
+            this.portName = args.arduinoPort;
         }
     }
 }
