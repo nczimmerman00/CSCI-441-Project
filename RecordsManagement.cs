@@ -108,6 +108,7 @@ namespace Remote_Garden_Control_Gui
     class RecordRetriever
     {
         SQLServer server;
+        public event EventHandler<EventArgs> EmptySQLQuery;
         public RecordRetriever(SQLServer server)
         {
             this.server = server;
@@ -121,6 +122,12 @@ namespace Remote_Garden_Control_Gui
             dataChart.Location = new Point(0, 50);
 
             Series graphData = server.retriveGardenData(args);
+            if (graphData == null)
+            {
+                if (EmptySQLQuery != null)
+                    EmptySQLQuery(this, new EventArgs());
+                return;
+            }
             graphData.Name = args.measurement;
             graphData.Color = Color.Green;
             graphData.IsVisibleInLegend = false;
