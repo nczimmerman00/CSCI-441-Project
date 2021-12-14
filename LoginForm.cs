@@ -21,16 +21,22 @@ namespace Remote_Garden_Control_Gui
         public LoginForm()
         {
             InitializeComponent();
+            this.FormClosing += this.OnFormClosed;
         }
         private void label1_Click(object sender, EventArgs e) { }
         private void label3_Click(object sender, EventArgs e) { }
 
         private void button1_Click(object sender, EventArgs e)
         {
+            // Check to ensure both username and password box are filled
+            if (textBox1.Text == "" || textBox2.Text == "")
+            {
+                MessageBox.Show("Please enter a username and password.");
+                return;
+            }
             bool verified = false;
             if (LoginSubmitted != null)
             {
-                //TODO
                 byte[] password = Encoding.ASCII.GetBytes(textBox2.Text);
                 password = new SHA256Managed().ComputeHash(password);
                 string hash = Encoding.ASCII.GetString(password);
@@ -52,6 +58,15 @@ namespace Remote_Garden_Control_Gui
             }
         }
         private void button2_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void LoginForm_Load(object sender, EventArgs e)
+        {
+
+        }
+        void OnFormClosed(object sender, FormClosingEventArgs e)
         {
             Application.Exit();
         }

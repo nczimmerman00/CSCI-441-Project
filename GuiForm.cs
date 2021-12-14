@@ -15,6 +15,7 @@ namespace Remote_Garden_Control_Gui
     public partial class GuiForm : Form
     {
         ConfigManagement config;
+        bool camfeedStarted;
         public event EventHandler<EventArgs> ResetArduino;
         public event EventHandler<RecordRetrievalConfiguration> GenerateGraphPressed;
         public event EventHandler<ConfigValues> ConfigChanged;
@@ -28,6 +29,8 @@ namespace Remote_Garden_Control_Gui
             InitializeComponent();
             config = x;
             resetConfig();
+            this.FormClosing += this.OnFormClosed;
+            camfeedStarted = false;
         }
 
         public void OnEmptySQLQuery (object source, EventArgs args)
@@ -236,9 +239,12 @@ namespace Remote_Garden_Control_Gui
         private void StartButton_Click(object sender, EventArgs e)
         {
             //Allows the cameras to be read
+            if (camfeedStarted)
+                videoCaptureDevice.Stop();
             videoCaptureDevice = new VideoCaptureDevice(filterInfoCollection[cameraComboBox.SelectedIndex].MonikerString);
             videoCaptureDevice.NewFrame += CamFrame_CamFeed;
             videoCaptureDevice.Start();
+            camfeedStarted = true;
         }
 
         private void CamFeed_Click(object sender, EventArgs e)
@@ -250,6 +256,12 @@ namespace Remote_Garden_Control_Gui
         {
             //Capture the camera's pictures
             camFeed.Image = (Bitmap)eventArgs.Frame.Clone();
+        }
+        void OnFormClosed(object sender, FormClosingEventArgs e)
+        {
+            if (camfeedStarted)
+                videoCaptureDevice.Stop();
+            Application.Exit();
         }
     }
 }

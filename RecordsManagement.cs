@@ -145,6 +145,7 @@ namespace Remote_Garden_Control_Gui
             graphForm.Width = 800;
             graphForm.Height = 600;
             graphForm.Controls.Add(dataChart);
+            graphForm.Text = args.measurement;
             graphForm.ResumeLayout();
             graphForm.ShowDialog();
         }
